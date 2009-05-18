@@ -145,7 +145,7 @@ JVCMPEXPORT int Run ( int iArgumentCount, char* szArguments [] )
 	// create the NetGame.
 	pNetGame = new CNetGame(iMaxPlayers,iListenPort,0,szPass,0,byteFriendlyFire,byteShowOnRadarOption,iStartInterior);
 
-	int s = luaL_loadfile(l, "mods\server.lua");
+	int s = luaL_loadfile(l, "mods\\server.lua");
 	if ( s==0 ) {
 		s = lua_pcall(l, 0, LUA_MULTRET, 0);
 	}
