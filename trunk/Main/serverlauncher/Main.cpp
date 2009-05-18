@@ -2,11 +2,6 @@
 
 using namespace std;
 
-bool FileExists(char* strFilename)
-{
-	return true;
-}
-
 static int StartRcon(int argc,char* argv [])
 {
     CDynamicLibrary RCon;
