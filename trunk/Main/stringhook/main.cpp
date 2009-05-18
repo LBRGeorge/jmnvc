@@ -3,6 +3,5 @@
 
 JVCMPEXPORT int InitHook(void)
 {
-	InstallGXTHook();
-	return 1;
+	return InstallGXTHook();
 }

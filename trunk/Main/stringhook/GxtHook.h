@@ -20,6 +20,6 @@ struct spookie_dot_gxt
 };
 
 extern FARPROC ReadGXTString;
-void InstallGXTHook(void);
+int InstallGXTHook(void);
 
 #endif
