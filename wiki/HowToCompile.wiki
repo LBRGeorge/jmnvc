@@ -1,4 +1,5 @@
 #summary How To Compile the source code
+#labels Compile
 
 = Checking out =
 
@@ -9,6 +10,10 @@ http://tortoisesvn.net/downloads
 
 Goto the downloads tab above (http://code.google.com/p/jmnvc/downloads/list) and download the LATEST RakNet Dependencies, "RakNet_RXXXX.exe".
 Open the installer and browse to where you checked out the source code
+Example, "C:\source\JVCMP\Main" where "C:\source\JVCMP" is the checkout folder.
+So you must add the "\Main" on the end or the installer will put it in the wrong folder!
+Please re-apply dependicys if they get deleted, check when you update the source code that "RakNet" exists if it doesnt then apply the dependicys again.
+
 
 = Details =
 
