@@ -90,7 +90,7 @@ void __declspec(naked) ReadGXTStringHook()
 	}
 }
 
-void InstallGXTHook(void)
+int InstallGXTHook(void)
 {
 	DWORD ReadGXTStringHook_addr = 0x584F35;	// 0x584F55
 	BYTE* VerCheck = (BYTE*)0x608578;
@@ -101,9 +101,10 @@ void InstallGXTHook(void)
 	}
 	DWORD dwProt = 0;
 	DWORD dwOffset = (DWORD)&ReadGXTStringHook - ReadGXTStringHook_addr;
-	VirtualProtect((void*)(ReadGXTStringHook_addr-5), 7, PAGE_EXECUTE_READWRITE, &dwProt);
+	if (!VirtualProtect((void*)(ReadGXTStringHook_addr-5), 7, PAGE_EXECUTE_READWRITE, &dwProt)) { return 0; }
 	*(BYTE*)(ReadGXTStringHook_addr-5) = 0xE9;
 	*(DWORD*)(ReadGXTStringHook_addr-4) = dwOffset;
 	*(WORD*)ReadGXTStringHook_addr = 0x9090;
-	VirtualProtect((void*)(ReadGXTStringHook_addr-5), 7, dwProt, &dwProt);
+	if (!VirtualProtect((void*)(ReadGXTStringHook_addr-5), 7, dwProt, &dwProt)) { return 0; }
+	return 1;
 }
