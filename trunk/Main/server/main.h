@@ -23,7 +23,7 @@
 #include "../lua/CLuaArgument.h"
 #include "../lua/CLuaArguments.h"
 
-#define DEFAULT_CONFIG_FILE "server.ini"
+#define DEFAULT_CONFIG_FILE "mods\\server.ini"
 #define DEFAULT_MAX_PLAYERS 32
 #define DEFAULT_LISTEN_PORT 8192
 #define DEFAULT_RCON_PORT	8190
