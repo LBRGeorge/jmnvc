@@ -12,6 +12,15 @@
 #include <tchar.h>
 #include <process.h>
 
+#if WIN32
+	#define JVCMPEXPORT extern "C" __declspec(dllexport)
+#else
+	#define JVCMPEXPORT extern "C"
+#endif
+
+#include <iostream>
+#define  _us2ms(x) (x*1000)
+
 #include "../raknet/RakClient.h"
 #include "../raknet/RakNetworkFactory.h"
 #include "../raknet/BitStream.h"
@@ -20,5 +29,4 @@
 #include "rconclient.h"
 
 extern bool bQuitApp;
-
 void logprintf(char* format, ...);

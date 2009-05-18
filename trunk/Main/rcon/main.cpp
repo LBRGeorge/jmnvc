@@ -47,16 +47,16 @@ DWORD WINAPI ConsoleInputThread(void* pParam)
 	}
 }
 
-int main (int argc, char** argv)
+JVCMPEXPORT int RunRcon(int argc, char** argv)
 {
 	puts("\n JVC:MP Command Line Remote Console Client");
 	puts(" ----------------------------------------");
 	puts(" v1.0, 26th Aug 2005\n");
 
-	if (argc < 3)
+	if (argc < 4)
 	{
 		puts(" Usage:");
-		puts("   rcon <ip/host> <port> <password>");
+		puts("   server rcon <ip/host> <port> <password>");
 		getc(stdin);
 		exit(0);
 	}
@@ -65,7 +65,7 @@ int main (int argc, char** argv)
 	hConsoleExecuteEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	DWORD dwThreadId;
 	HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ConsoleInputThread, NULL, 0, &dwThreadId);
-	pRconClient = new CRconClient(argv[1], atoi(argv[2]), argv[3]);
+	pRconClient = new CRconClient(argv[2], atoi(argv[3]), argv[4]);
 
 	while (!bQuitApp)
 	{
