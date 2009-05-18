@@ -1,0 +1,15 @@
+#summary How To Compile the source code
+
+= Checking out =
+
+To checkout get the SVN Client.
+http://tortoisesvn.net/downloads
+
+= Setting Up =
+
+Goto the downloads tab above (http://code.google.com/p/jmnvc/downloads/list) and download the LATEST RakNet Dependencies, "RakNet_RXXXX.exe".
+Open the installer and browse to where you checked out the source code
+
+= Details =
+
+You may make patch files if you see a mistake by going to submit a patch at http://jacksforums.webs.com/apps/forums/ you could upload the file to http://sendspace.com or any other upload site.
