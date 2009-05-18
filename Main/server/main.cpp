@@ -8,6 +8,12 @@
 #include <unistd.h>
 #endif
 
+#if WIN32
+	#define JVCMPEXPORT extern "C" __declspec(dllexport)
+#else
+	#define JVCMPEXPORT extern "C"
+#endif
+
 #include "../lua/CLuaArgument.h"
 
 lua_State *l;
@@ -48,8 +54,12 @@ void RegisterFunction(const char *szFunctionName, lua_CFunction pFunc)
 	lua_register(l, szFunctionName, pFunc);
 }
 
-int main (int argc, char* argv[])
+//int main (int argc, char* argv[])
+JVCMPEXPORT int Run ( int iArgumentCount, char* szArguments [] )
 {
+	CreateDirectory("dumps",0);
+	CreateDirectory("mods",0);
+
 	l = lua_open();
 	luaopen_base(l);
 	luaopen_table(l);
@@ -80,8 +90,8 @@ int main (int argc, char* argv[])
 
 	pServerConfig = new CConfig();
 
-	if(argc > 1) {
-		strcpy(szConfigFile,argv[1]);
+	if(iArgumentCount > 1) {
+		strcpy(szConfigFile,szArguments[1]);
 	} else {
 		strcpy(szConfigFile,DEFAULT_CONFIG_FILE);
 	}
@@ -135,7 +145,7 @@ int main (int argc, char* argv[])
 	// create the NetGame.
 	pNetGame = new CNetGame(iMaxPlayers,iListenPort,0,szPass,0,byteFriendlyFire,byteShowOnRadarOption,iStartInterior);
 
-	int s = luaL_loadfile(l, "main.lua");
+	int s = luaL_loadfile(l, "mods\server.lua");
 	if ( s==0 ) {
 		s = lua_pcall(l, 0, LUA_MULTRET, 0);
 	}
@@ -192,7 +202,7 @@ void fatal_exit(char * szError)
 {
 	#ifdef WIN32
 		printf("%s\n\n",szError);
-		printf("Press any key to close.");
+		printf("Press enter to close.");
 		getc(stdin);
 	#endif
 		exit(1);
