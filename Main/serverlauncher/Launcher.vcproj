@@ -197,6 +197,10 @@
 				RelativePath=".\Main.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Main.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -208,6 +212,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\svr.rc"
+			>
+		</File>
 	</Files>
 	<Globals>
 		<Global

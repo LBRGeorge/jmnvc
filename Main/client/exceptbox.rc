@@ -84,6 +84,7 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
+IDI_ICON1               ICON    DISCARDABLE     "..\gtavc.ico"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
