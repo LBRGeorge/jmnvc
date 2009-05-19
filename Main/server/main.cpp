@@ -1,31 +1,11 @@
 
-#ifdef WIN32
-#include <stdio.h>
-#include <windows.h>
-#else
-#include <dlfcn.h>
-#include <stdlib.h>
-#include <unistd.h>
-#endif
-
-#if WIN32
-	#define JVCMPEXPORT extern "C" __declspec(dllexport)
-#else
-	#define JVCMPEXPORT extern "C"
-#endif
-
-#include "../lua/CLuaArgument.h"
-
-lua_State *l;
-ILuaModuleManager10 *pModuleManager = NULL;
-
-#include <iostream>
-
-#define  _us2ms(x) (x*1000)
-
+#include <winsock.h>
 #include "main.h"
 #include "netgame.h"
 #include "rcon.h"
+
+lua_State *l;
+ILuaModuleManager10 *pModuleManager = NULL;
 
 #include "../raknet/BitStream.h"
 #include "../raknet/RakPeerInterface.h"
