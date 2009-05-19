@@ -34,7 +34,6 @@ void RegisterFunction(const char *szFunctionName, lua_CFunction pFunc)
 	lua_register(l, szFunctionName, pFunc);
 }
 
-//int main (int argc, char* argv[])
 JVCMPEXPORT int Run ( int iArgumentCount, char* szArguments [] )
 {
 	CreateDirectory("dumps",0);
