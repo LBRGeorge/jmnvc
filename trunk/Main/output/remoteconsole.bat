@@ -1,3 +1,2 @@
-echo @off
-cls
-start server rcon
+@echo off
+server rcon
