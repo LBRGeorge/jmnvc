@@ -74,7 +74,7 @@ float CBBFont::Draw(char* pText, float fYOffset, DWORD dwColor)
 	m_pVB->Lock(0, 0, (BYTE**)&vert_ptr, D3DLOCK_DISCARD);
 
 	float fX = 0.0f;
-	for (int i=0; i<len; i++)
+	for (i=0; i<len; i++)
 	{
 		fX += (float)m_Metrics[pText[i]] * m_fScale;
 	}
