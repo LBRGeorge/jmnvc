@@ -8,7 +8,7 @@ extern CCmdWindow	 *pCmdWindow;
 //int iPortTemp = 22005;
 //char* szHostTemp;
 
-#define NETGAME_VERSION 31
+#define NETGAME_VERSION 35
 
 //----------------------------------------------------
 
