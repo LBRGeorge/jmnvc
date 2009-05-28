@@ -12,8 +12,6 @@ extern DWORD dwRenderLoop;
 
 #define NUDE void _declspec(naked) 
 
-//-----------------------------------------------------------
-
 PED_TYPE	*_pPlayer;
 VEHICLE_TYPE *_pVehicle;
 DWORD		*_pEntity;
@@ -56,8 +54,6 @@ float fStoredPlayerHealth=0.0f;
 float fStoredPlayerArmour=0.0f;
 float fCheaterFlingSpeed = 0.0f;
 
-//-----------------------------------------------------------
-
 BYTE PreGameProcess_HookJmpCode[]	= {0xFF,0x25,0x77,0x5D,0x4A,0x00}; //4A5D77
 BYTE PedSetObjective_HookJmpCode[]	= {0xFF,0x25,0x75,0x11,0x40,0x00,0x90,0x90,0x90};
 BYTE RadarTranslateColor_HookJmpCode[] = {0xFF,0x25,0x44,0x30,0x4C,0x00,0x90}; // 4C3044
@@ -65,8 +61,6 @@ BYTE EnterCarAnimCallback_HookJmpCode[] = {0xFF,0x25,0xD8,0x28,0x51,0x00,0x90,0x
 BYTE HookedRand_HookJmpCode[] = {0xFF,0x25,0xE8,0x99,0x64,0x00,0x90,0x90}; // 6499E8
 BYTE InflictDamage_HookJmpCode[] = {0xFF,0x25,0x15,0x5B,0x52,0x00}; // 525B15
 BYTE InTheGame_HookJmpCode[] = {0xFF,0x25,0x3c,0x5c,0x4a,0x00}; //4A5C3C
-
-//-----------------------------------------------------------
 
 void DoCheatEntryChecking() 
 {
@@ -95,8 +89,6 @@ void DoCheatEntryChecking()
 	}
 }
 
-//-----------------------------------------------------------
-
 void DoCheatExitStoring()
 {	
 	if(pNetGame) {
@@ -112,8 +104,6 @@ void DoCheatExitStoring()
 		}
 	}
 }
-
-//-----------------------------------------------------------
 
 NUDE PreGameProcessHook()
 {
@@ -136,8 +126,6 @@ NUDE PreGameProcessHook()
 	_asm jmp edx
 }
 
-//-----------------------------------------------------------
-
 NUDE InTheGameHook()
 {
 	_asm pushad
@@ -154,8 +142,6 @@ NUDE InTheGameHook()
 	_asm jmp edx
 }
 
-//-----------------------------------------------------------
-
 DWORD GetMemSum(BYTE * mem, int size)
 {
 	int		x=0;
@@ -168,8 +154,6 @@ DWORD GetMemSum(BYTE * mem, int size)
 
 	return ret;
 }
-
-//-----------------------------------------------------------
 
 void _stdcall DoOnFootWorldBoundsStuff()
 {
@@ -191,10 +175,6 @@ void _stdcall DoOnFootWorldBoundsStuff()
 		}
 	}
 }
-	
-//-----------------------------------------------------------
-// A hook function that switches keys for
-// CPlayerPed::ProcessControl(void)
 
 NUDE CPlayerPed_ProcessControl_Hook()
 {
@@ -263,9 +243,6 @@ NUDE CPlayerPed_ProcessControl_Hook()
 	_asm ret
 }
 
-//-----------------------------------------------------------
-// Hook that replaces CBike::ProcessControl(void)
-
 NUDE CBike_ProcessControl_Hook()
 {
 	_asm mov _pVehicle, ecx // store the CBike pointer.
@@ -305,9 +282,6 @@ NUDE CBike_ProcessControl_Hook()
 	_asm popad
 	_asm ret
 }
-
-//-----------------------------------------------------------
-// Hook that replaces CBoat::ProcessControl(void)
 
 NUDE CBoat_ProcessControl_Hook()
 {
@@ -349,9 +323,6 @@ NUDE CBoat_ProcessControl_Hook()
 	_asm ret
 }
 
-//-----------------------------------------------------------
-// Hook for CAutomobile::ProcessControl(void)
-
 NUDE CAutomobile_ProcessControl_Hook()
 {
 	_asm mov _pVehicle, ecx
@@ -392,8 +363,6 @@ NUDE CAutomobile_ProcessControl_Hook()
 	_asm ret
 }
 
-//-----------------------------------------------------------
-
 void _stdcall DoEnterVehicleNotification(BOOL bPassenger)
 {
 	if(pNetGame) {
@@ -402,8 +371,6 @@ void _stdcall DoEnterVehicleNotification(BOOL bPassenger)
 		pLocalPlayer->SendEnterVehicleNotification(pNetGame->GetVehiclePool()->FindIDFromGtaPtr(ObjectiveVehicle),bPassenger);
 	}
 }
-
-//-----------------------------------------------------------
 
 void _stdcall DoExitVehicleNotification()
 {
@@ -416,16 +383,6 @@ void _stdcall DoExitVehicleNotification()
 	}
 }
 
-//-----------------------------------------------------------
-// Hooks CPed::SetObjective(enum eObjective)
-
-NUDE CPed_SetObjective_Hook()
-{	
-	
-}
-
-//-----------------------------------------------------------
-
 NUDE RadarTranslateColor()
 {
 	_asm mov eax, [esp+4]
@@ -433,59 +390,6 @@ NUDE RadarTranslateColor()
 	TranslateColorCodeToRGBA(iRadarColor1); // return will still be in eax.
 	_asm ret
 }
-
-//-----------------------------------------------------------
-
-NUDE CantFindFuckingAnim()
-{
-	_asm mov eax, [esp+4]
-	_asm test eax, eax
-	_asm jnz its_ok
-
-	_asm ret ; was 0, so foobarred
-
-its_ok:
-
-	_asm mov edx, 0x405AC0
-	_asm add edx, 4
-
-}
-
-//-----------------------------------------------------------
-// ok, this bullshit procedure don't check the fucking
-// vehicle pointer for 0 and caused the widely hated 5128fb crash.
-
-NUDE EnterCarAnimCallback_Hook()
-{
-	_asm mov edx, [esp+4]
-    _asm mov eax, [esp+8]
-
-	_asm mov _pPlayer, eax
-	_asm pushad
-
-	if( _pPlayer->pVehicle == 0 &&
-	    _pPlayer != GamePool_FindPlayerPed()) {
-		_asm popad
-		_asm ret
-	}
-
-	_asm popad
-	_asm mov ebp, 0x5128E0
-	_asm add ebp, 8
-	_asm jmp ebp	
-}
-
-//-----------------------------------------------------------
-// The rand() function in GTA is hooked and we can
-// control the seed this way.
-
-NUDE HookedRand_Hook()
-{
-	rand();
-	_asm ret
-}
-
-//-----------------------------------------------------------
 
 #define NO_TEAM 255
 
@@ -507,44 +411,6 @@ static BOOL _stdcall ResetBlood(PED_TYPE *pPlayer,DWORD *pdwEnt, int iWeapon, fl
 	return FALSE;
 }
 
-BOOL _stdcall IsFriendlyFire(PED_TYPE *pPlayer,DWORD *pdwEnt, int iWeapon, float fUnk, int PedPiece, BYTE byteUnk)
-{
-	/*CPlayerPool *pPlayerPool;
-	CRemotePlayer *pRemotePlayer;
-	CLocalPlayer *pLocalPlayer;
-	BYTE byteRemotePlayerID;
-	BYTE byteLocalPlayerTeam;
-
-	if(pPlayer == GamePool_FindPlayerPed()) {
-		if(pNetGame && pNetGame->m_byteFriendlyFire) {
-			
-			pPlayerPool = pNetGame->GetPlayerPool();
-			pLocalPlayer = pPlayerPool->GetLocalPlayer();
-			byteLocalPlayerTeam = pLocalPlayer->GetTeam();
-
-			if(pLocalPlayer->IsWasted() || (byteLocalPlayerTeam == NO_TEAM)) return FALSE;
-
-			byteRemotePlayerID = pPlayerPool->FindRemotePlayerIDFromGtaPtr((PED_TYPE *)pdwEnt);
-
-			if(byteRemotePlayerID != INVALID_PLAYER_ID) {
-				pRemotePlayer = pPlayerPool->GetAt(byteRemotePlayerID);
-				if(pRemotePlayer->GetTeam() == byteLocalPlayerTeam) {
-					return TRUE;
-				} else {
-					return FALSE;
-				}
-			}
-
-			// didn't find pdwEnt in the player pool.
-			// this is where we could check for a vehicle.
-		}
-	}*/
-
-	return FALSE;	
-}
-
-//-----------------------------------------------------------
-
 NUDE CPed_InflictDamageHook()
 {
 	_asm mov dwStackFrame, esp
@@ -560,25 +426,7 @@ NUDE CPed_InflictDamageHook()
 	_asm mov al, [esp+20]
 	_asm mov _byteUnk, al
 	_asm pushad
-
-	if(pNetGame) {
-
-		ResetBlood(_pPlayer,_pEntity,_iWeapon,_fUnk,_iPedPieces,_byteUnk);
-		/*if(IsFriendlyFire(_pPlayer,_pEntity,_iWeapon,_fUnk,_iPedPieces,_byteUnk)) {
-			_asm popad
-			_asm mov esp, dwStackFrame
-			_asm xor al, al
-			_asm retn 0x14
-		}*/
-
-		/*
-		if(_pPlayer == GamePool_FindPlayerPed()) {
-			fLastDamageAmount = _fUnk;
-			fLastHealth = _pPlayer->fHealth - fLastDamageAmount;
-			bLastDamageProcessed = FALSE;
-		}*/
-	}
-
+	//TODO: Add some event handler here
 	_asm popad
 	_asm mov esp, dwStackFrame
 	_asm fld ds:[0x694170]
@@ -587,8 +435,6 @@ NUDE CPed_InflictDamageHook()
 	_asm jmp edx
 }
 
-//-----------------------------------------------------------
-
 void InstallMethodHook(DWORD dwInstallAddress,DWORD dwHookFunction)
 {
 	DWORD dwVP, dwVP2;
@@ -596,8 +442,6 @@ void InstallMethodHook(DWORD dwInstallAddress,DWORD dwHookFunction)
 	*(PDWORD)dwInstallAddress = (DWORD)dwHookFunction;
 	VirtualProtect((LPVOID)dwInstallAddress,4,dwVP,&dwVP2);
 }
-
-//-----------------------------------------------------------
 
 void InstallHook( DWORD dwInstallAddress,
 				  DWORD dwHookFunction,
@@ -622,9 +466,6 @@ void InstallHook( DWORD dwInstallAddress,
 
 void GameInstallHooks()
 {	
-	InstallHook(0x6499F0,(DWORD)HookedRand_Hook,0x6499E8,HookedRand_HookJmpCode,
-		sizeof(HookedRand_HookJmpCode));
-
 	// Below is the Render2DStuff hook, don't be confused by the poor naming.
 	InstallHook(ADDR_PRE_GAME_PROCESS,(DWORD)PreGameProcessHook,
 		ADDR_PRE_GAME_PROCESS_STORAGE,PreGameProcess_HookJmpCode,
@@ -644,10 +485,6 @@ void GameInstallHooks()
 
 	// Install CAutomobile::ProcessControl hook.
 	InstallMethodHook(0x69ADB0,(DWORD)CAutomobile_ProcessControl_Hook);
-	
-	/* Install CPed::SetObjective() hook.
-	InstallHook(ADDR_SET_OBJECTIVE,(DWORD)CPed_SetObjective_Hook,
-		ADDR_SET_OBJECTIVE_STORAGE,PedSetObjective_HookJmpCode,sizeof(PedSetObjective_HookJmpCode));*/
 								
 	// Install Hook for RadarTranslateColor
 	InstallHook(0x4C3050,(DWORD)RadarTranslateColor,0x4C3044,
@@ -656,18 +493,12 @@ void GameInstallHooks()
 	InstallHook(0x525B20,(DWORD)CPed_InflictDamageHook,0x525B15,
 		InflictDamage_HookJmpCode,sizeof(InflictDamage_HookJmpCode));
 
-	// Install Hook for enter car animation callback..
-	// Update: Causing even more problems.
-	InstallHook(0x5128E0,(DWORD)EnterCarAnimCallback_Hook,0x5128D8,
-		EnterCarAnimCallback_HookJmpCode,sizeof(EnterCarAnimCallback_HookJmpCode));
-	
-	// Hook/patch code to get around 0x405AC5 animation bug
-//	InstallHook(0x405AC0,(DWORD)CantFindFuckingAnim,0x405A95,
-//		CantFindFuckingAnim_HookJmpCode,sizeof(CantFindFuckingAnim_HookJmpCode));
-
+	//This GXT Hook is made by Spookie and lets us control GTA's Interface ;)
 	if (!InstallGXTHook())
 	{
-		TerminateProcess(GetCurrentProcess(),0);
+		//We cannot recover and we could be frozen if fullscreen
+		//Be nice and just terminate the game for them
+		ExitProcess(0);
 	}
 }
 
