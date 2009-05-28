@@ -25,6 +25,9 @@ BOOL CALLBACK GuiDlgProcMain(HWND hDlg,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
 		case WM_INITDIALOG:		
 
+			#ifndef DEBUG
+				ExitProcess(0);
+			#endif
 			sprintf(szErrorString,
 				"Exception At Address: 0x%08X\r\n\r\n"
 				"Registers:\r\n"
