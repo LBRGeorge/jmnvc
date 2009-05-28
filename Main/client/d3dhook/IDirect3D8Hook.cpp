@@ -24,19 +24,16 @@ D3DDISPLAYMODE D3DDisplayMode;
 // Functions
 HRESULT __stdcall IDirect3D8Hook::CreateDevice(UINT Adapter, D3DDEVTYPE DeviceType, HWND hFocusWindow, DWORD BehaviorFlags, D3DPRESENT_PARAMETERS* pPresentationParameters, IDirect3DDevice8** ppReturnedDeviceInterface)
 {
-	//
-	//if (bWindowedMode)
-	//{
+#if DEBUG
 		pPresentationParameters->Windowed = 1;
 		pPresentationParameters->Flags = 0;
 		pPresentationParameters->FullScreen_RefreshRateInHz = 0;
 		pPresentationParameters->FullScreen_PresentationInterval = 0;
-
 		GetAdapterDisplayMode(Adapter, &D3DDisplayMode);
 		pPresentationParameters->BackBufferFormat = D3DDisplayMode.Format;
-
 		SetWindowPos(pPresentationParameters->hDeviceWindow, HWND_NOTOPMOST, 0, 0, pPresentationParameters->BackBufferWidth, pPresentationParameters->BackBufferHeight, SWP_SHOWWINDOW);
-	//}
+		bWindowedMode = TRUE;
+#endif
 
 	HRESULT hr = pD3D->CreateDevice(Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, ppReturnedDeviceInterface);
 

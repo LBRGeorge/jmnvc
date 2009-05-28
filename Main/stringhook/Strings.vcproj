@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="Strings"
-	ProjectGUID="{09EE46BE-9A48-4AC0-9A31-A28C78DD843B}"
+	ProjectGUID="{9CE2472F-641E-4A9D-A520-D8B2A17AAAFF}"
 	RootNamespace="server"
 	TargetFrameworkVersion="0"
 	>

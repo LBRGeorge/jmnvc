@@ -131,7 +131,7 @@ void TheGameLoop()
 	if(!bGameInited && FileCheckSum())
 	{
 		pNetGame = new CNetGame(tSettings.szConnectHost,atoi(tSettings.szConnectPort),tSettings.szNickName,tSettings.szConnectPass);
-		pGame->ToggleFrameLimiterState(TRUE);
+		pGame->ToggleFrameLimiterState(FALSE);
 		bGameInited = TRUE;
 		return;
 	}
@@ -317,8 +317,9 @@ void InitSettings()
 {
 	PCHAR szCmdLine = GetCommandLine();
 	memset(&tSettings,0,sizeof(GAME_SETTINGS));
-	tSettings.bDisableNewspapers = TRUE;
-	strcpy_s(tSettings.szConnectPort,"22005");
+	tSettings.bDisableNewspapers = FALSE;
+	strcpy_s(tSettings.szConnectHost,"localhost");
+	strcpy_s(tSettings.szConnectPort,"5192");
 	strcpy_s(tSettings.szNickName,"Player");
 	tSettings.bPlayOnline = TRUE;
 	tSettings.bDebug = FALSE;
@@ -328,9 +329,6 @@ void InitSettings()
 		if(*szCmdLine == '-' || *szCmdLine == '/') {
 			szCmdLine++;
 			switch(*szCmdLine) {
-				case '1':
-					tSettings.bDisableNewspapers = FALSE;
-					break;
 				case 'h':
 				case 'H':
 					szCmdLine++;
