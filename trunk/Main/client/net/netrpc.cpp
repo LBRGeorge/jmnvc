@@ -340,7 +340,7 @@ void PedSpawn(PCHAR Data, int iBitLength, PlayerID sender)
 	}
 
 	CPlayerPool *pPlayerPool = pNetGame->GetPlayerPool();
-	pPlayerPool->New(bytePedID+20, "sinorpedped");
+	pPlayerPool->New(bytePedID+20, "sinorpedped", FALSE);
 	CRemotePlayer* Player = pPlayerPool->GetAt(bytePedID+20);
 	Player->SpawnPlayer(1,byteSkin,&vecPos,fRotation,-1,-1,-1,-1,-1,-1);
 	//Player->GetPlayerPed()->SetImmunities(0,0,0,0,0);
