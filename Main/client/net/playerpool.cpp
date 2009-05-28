@@ -56,7 +56,7 @@ BOOL CPlayerPool::New(BYTE bytePlayerID, PCHAR szPlayerName, BOOL bAlert)
 		m_ulIPAddress[bytePlayerID] = 0;
 
 		if(pChatWindow) 
-			pChatWindow->AddInfoMessage("*** %s joined the server.",szPlayerName);
+			pChatWindow->AddInfoMessage("%s joined the game.",szPlayerName);
 		return TRUE;
 	}
 	else
@@ -78,7 +78,7 @@ BOOL CPlayerPool::Delete(BYTE bytePlayerID, BYTE byteReason)
 	m_pPlayers[bytePlayerID] = NULL;
 
 	if(pChatWindow) {
-		pChatWindow->AddInfoMessage("*** %s left the server. (%s)",
+		pChatWindow->AddInfoMessage("%s left the game. [%s]",
 		m_szPlayerNames[bytePlayerID],szQuitReasons[byteReason]);
 	}
 
