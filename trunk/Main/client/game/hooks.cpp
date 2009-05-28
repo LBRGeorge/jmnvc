@@ -493,13 +493,14 @@ void GameInstallHooks()
 	InstallHook(0x525B20,(DWORD)CPed_InflictDamageHook,0x525B15,
 		InflictDamage_HookJmpCode,sizeof(InflictDamage_HookJmpCode));
 
+	//TODO: Fix GXT Hook
 	//This GXT Hook is made by Spookie and lets us control GTA's Interface ;)
-	if (!InstallGXTHook())
-	{
-		//We cannot recover and we could be frozen if fullscreen
-		//Be nice and just terminate the game for them
-		ExitProcess(0);
-	}
+	//if (!InstallGXTHook())
+	//{
+	//	//We cannot recover and we could be frozen if fullscreen
+	//	//Be nice and just terminate the game for them
+	//	ExitProcess(0);
+	//}
 }
 
 //-----------------------------------------------------------

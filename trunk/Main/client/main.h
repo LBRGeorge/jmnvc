@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <windows.h>
 
-#define _CRT_SECURE_NO_WARNINGS
 #define MAX_PLAYER_NAME		24
 #define MAX_NETWORK_PLAYERS	50
 #define MAX_SETTINGS_STRING 128

@@ -1,5 +1,6 @@
 #include "main.h"
 #include <urlmon.h>
+
 CGame					*pGame=0;
 DWORD					dwGameLoop=0;
 DWORD					dwRenderLoop=0;
@@ -9,11 +10,7 @@ CCmdWindow				*pCmdWindow=0;
 CNetGame				*pNetGame=0;
 
 BOOL					bGameInited=FALSE;
-//#if DEBUG
-BOOL					bWindowedMode=TRUE;
-//#else
-//BOOL					bWindowedMode=FALSE;
-//#endif
+BOOL					bWindowedMode=FALSE;
 BOOL					bShowNameTags=TRUE;
 BOOL					bAntiCheat=TRUE;
 
@@ -26,8 +23,6 @@ int						iStartGameDelay=200;
 HANDLE					hInstance;
 CScoreBoard				*pScoreBoard;
 CNetStats				*pNetStats;
-
-// forwards
 
 BOOL SubclassGameWindow();
 void SetupCommands();
@@ -79,43 +74,14 @@ HealthBarVertices_s HealthBarVertices[4] = {
 	{ 0.29f, -0.02f, 0.0f, D3DCOLOR_XRGB(0, 255, 0)}
 };
 
-// backwards
-//----------------------------------------------------
-
-BOOL FileExists(char* file)
-{
-	FILE* fLocalFile;
-	fLocalFile = fopen(file, "r");
-	if(ferror(fLocalFile))
-	{
-		//pChatWindow->AddDebugMessage("Kicked for cheating: \'%s\'.", mdChkFile->szFileLocation);
-		fclose(fLocalFile);
-		return FALSE;
-	}
-	return TRUE;
-}
-
-//HRESULT hr;
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
 	if(DLL_PROCESS_ATTACH==fdwReason)
 	{
 		hInstance = hinstDLL;
-		//if (!FileExists("client.lua"))
-		//{
-			//hr = URLDownloadToFile(NULL,"http://www.jacksmininetwork.co.uk/client.lua","client.lua",0,NULL);
-		//}
 		InitSettings();
 
-		if(tSettings.bDebug || tSettings.bPlayOnline) {
-		
-			// Check the GTA version
-			//if(DetermineGTAVersion() != VICE_10) {
-			//	MessageBox(0,"Incorrect gta-vc.exe version detected.\nYou must use GTA:VC 1.0 to play VC:MP","VC:MP Error",MB_OK);
-			//	SetForegroundWindow(HWND_DESKTOP);
-			//	ExitProcess(1);
-			//}
-
+		if(DetermineGTAVersion() == VICE_10) {
 			dwGameLoop = (DWORD)TheGameLoop;
 			dwRenderLoop = (DWORD)TheRenderLoop;
 
@@ -150,28 +116,21 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 
 			SetupCommands();			
 		}
-		// else they must want to play single
-		// player or they got the command line
-		// arguments wrong.
+		// Else they must want to play SP
+		// or wrong version or arguments wrong.
 	}
 
 	return TRUE;
 }
 
-//----------------------------------------------------
-// Main loop which is called before game processing.
-// This is actually a result of a hook inside GTA's
-// main loop (TheGameLoop())
+// Game loop gets called every frame when started the game
 
 void TheGameLoop()
 {
 	// If the game is not inited then do it now.
 	if(!bGameInited && FileCheckSum())
 	{
-		if(tSettings.bPlayOnline)
-		{			
-			pNetGame = new CNetGame(tSettings.szConnectHost,atoi(tSettings.szConnectPort),tSettings.szNickName,tSettings.szConnectPass);
-		}
+		pNetGame = new CNetGame(tSettings.szConnectHost,atoi(tSettings.szConnectPort),tSettings.szNickName,tSettings.szConnectPass);
 		pGame->ToggleFrameLimiterState(TRUE);
 		bGameInited = TRUE;
 		return;
@@ -345,7 +304,7 @@ void TheGameLoop()
 	}
 }
 
-//----------------------------------------------------
+// Render loop gets called every frame including the main menu
 
 void TheRenderLoop()
 {
@@ -361,39 +320,21 @@ void InitSettings()
 	tSettings.bDisableNewspapers = TRUE;
 	strcpy_s(tSettings.szConnectPort,"22005");
 	strcpy_s(tSettings.szNickName,"Player");
+	tSettings.bPlayOnline = TRUE;
+	tSettings.bDebug = FALSE;
 
 	while(*szCmdLine) {
 
 		if(*szCmdLine == '-' || *szCmdLine == '/') {
 			szCmdLine++;
 			switch(*szCmdLine) {
-			//	case 'd':
-			//	case 'D':
-			//		tSettings.bDebug = TRUE;
-			//		tSettings.bPlayOnline = FALSE;
-			//		break;
-			//	case 'c':
-			//	case 'C':
-			//		tSettings.bPlayOnline = TRUE;
-			//		tSettings.bDebug = FALSE;
-			//		break;
 				case '1':
 					tSettings.bDisableNewspapers = FALSE;
-					break;
-				case 'f':
-				case 'F':
-					//bWindowedMode = FALSE;
-					break;
-				case 'w':
-				case 'W':
-					//bWindowedMode = TRUE;
 					break;
 				case 'h':
 				case 'H':
 					szCmdLine++;
 					SetStringFromCommandLine(szCmdLine,tSettings.szConnectHost);
-					tSettings.bPlayOnline = TRUE;
-					tSettings.bDebug = FALSE;
 					break;
 				case 'p':
 				case 'P':
@@ -405,11 +346,6 @@ void InitSettings()
 					szCmdLine++;
 					SetStringFromCommandLine(szCmdLine,tSettings.szNickName);
 					break;
-			//	case 'z':
-			//	case 'Z':
-			//		szCmdLine++;
-			//		SetStringFromCommandLine(szCmdLine,tSettings.szConnectPass);
-			//		break;
 			}
 		}
 
