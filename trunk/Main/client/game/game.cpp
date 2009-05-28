@@ -152,15 +152,15 @@ void CGame::StartGame(BOOL NewspapersDisabled)
 
 	// Patch to modify the loadsc0 txd
 	VirtualProtect((PVOID)0x6D5E9C,16,PAGE_EXECUTE_READWRITE,&dwVP);
-	strcpy((PCHAR)0x6D5E9C,"LOADSC14");
+	strcpy((PCHAR)0x6D5E9C,"LOADSC8");
 	VirtualProtect((PVOID)0x6D5E9C,16,dwVP,&dwVP2);
 
 	VirtualProtect((PVOID)0x68E594,16,PAGE_EXECUTE_READWRITE,&dwVP);
-	strcpy((PCHAR)0x68E594,"LOADSC14");
+	strcpy((PCHAR)0x68E594,"LOADSC8");
 	VirtualProtect((PVOID)0x68E594,16,dwVP,&dwVP2);
 
 	VirtualProtect((PVOID)0x68E6F4,16,PAGE_EXECUTE_READWRITE,&dwVP);
-	strcpy((PCHAR)0x68E6F4,"LOADSC14");
+	strcpy((PCHAR)0x68E6F4,"LOADSC8");
 	VirtualProtect((PVOID)0x68E6F4,16,dwVP,&dwVP2);
 	
 	// Patch to increase vehicle pool limit from 110 to 200
