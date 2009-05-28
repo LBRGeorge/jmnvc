@@ -15,7 +15,7 @@ extern CRcon			*pRcon;
 #	define stricmp strcasecmp
 #endif
 
-#define NETGAME_VERSION 31
+#define NETGAME_VERSION 35
 
 #define REJECT_REASON_BAD_VERSION   1
 #define REJECT_REASON_BAD_NICKNAME  2
