@@ -31,7 +31,7 @@ public:
 	CLocalPlayer * GetLocalPlayer() { return m_pLocalPlayer; };
 	BYTE FindRemotePlayerIDFromGtaPtr(PED_TYPE * pActor);
 
-	BOOL New(BYTE bytePlayerID, PCHAR szPlayerName);
+	BOOL New(BYTE bytePlayerID, PCHAR szPlayerName, BOOL bAlert);
 	BOOL Delete(BYTE bytePlayerID, BYTE byteReason);
 
 	CRemotePlayer* GetAt(BYTE bytePlayerID) {

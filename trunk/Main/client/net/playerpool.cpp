@@ -41,7 +41,7 @@ CPlayerPool::~CPlayerPool()
 
 //----------------------------------------------------
 
-BOOL CPlayerPool::New(BYTE bytePlayerID, PCHAR szPlayerName)
+BOOL CPlayerPool::New(BYTE bytePlayerID, PCHAR szPlayerName, BOOL bAlert)
 {
 	m_pPlayers[bytePlayerID] = new CRemotePlayer();
 
