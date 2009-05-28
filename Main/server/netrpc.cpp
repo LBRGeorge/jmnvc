@@ -104,6 +104,7 @@ void ClientJoin(PCHAR Data, int iBitLength, PlayerID sender)
 			pbsExistingClient->Write(x);
 			pbsExistingClient->Write(strlen(pPlayerPool->GetPlayerName(x)));
 			pbsExistingClient->Write(pPlayerPool->GetPlayerName(x),strlen(pPlayerPool->GetPlayerName(x)));
+			pbsExistingClient->Write((BYTE)0);
 			pRak->RPC("ServerJoin",pbsExistingClient,HIGH_PRIORITY,RELIABLE_ORDERED,0,sender,FALSE,FALSE);
 	
 			delete pbsExistingClient;

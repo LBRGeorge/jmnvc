@@ -131,7 +131,7 @@ JVCMPEXPORT int Run ( int iArgumentCount, char* szArguments [] )
 	report_errors(l, s);
 	printf("-- JMN Vice City Multiplayer Server Started. Port: %d Max players: %d\n",iListenPort,iMaxPlayers);
 	printf("-- Make sure Port: %d can be accessed from the internet UDP and TCP.\n",iListenPort,iMaxPlayers);
-	printf("-- Revision 2.\n");
+	printf("-- Revision 29.\n");
 	//printf("This server may crash if there is any errors so you may develop software\n",iListenPort,iMaxPlayers);
 	//printf("To detect this program crashing then restart it (This program terminates in the case of an error)\n",iListenPort,iMaxPlayers);
 	//printf("NOTE: In this version there is only server side coding.\n",iListenPort,iMaxPlayers);

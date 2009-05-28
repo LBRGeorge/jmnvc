@@ -21,16 +21,24 @@ void ServerJoin(PCHAR Data, int iBitLength, PlayerID sender)
 	CHAR szPlayerName[MAX_PLAYER_NAME];
 	BYTE bytePlayerID;
 	UINT uiNameLength;
+	BYTE byteSendDuringConnect;
 
 	memset(szPlayerName,0,MAX_PLAYER_NAME);
 
 	bsData.Read(bytePlayerID);
 	bsData.Read(uiNameLength);
 	bsData.Read(szPlayerName,uiNameLength);
+	bsData.Read(byteSendDuringConnect);
 	szPlayerName[uiNameLength] = '\0';
 
+	BOOL bAlert = FALSE;
+	if (byteSendDuringConnect==1)
+	{
+		bAlert = TRUE;
+	}
+
 	// Add this client to the player pool.
-	pPlayerPool->New(bytePlayerID, szPlayerName);
+	pPlayerPool->New(bytePlayerID, szPlayerName, bAlert);
 }
 
 //----------------------------------------------------

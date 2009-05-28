@@ -45,6 +45,7 @@ BOOL CPlayerPool::New(BYTE bytePlayerID, PCHAR szPlayerName)
 		bsSend.Write(bytePlayerID);
 		bsSend.Write(strlen(szPlayerName));
 		bsSend.Write(szPlayerName,strlen(szPlayerName));
+		bsSend.Write((BYTE)1);
 		pNetGame->GetRakServer()->RPC("ServerJoin",&bsSend,HIGH_PRIORITY,RELIABLE_ORDERED,0,
 			pNetGame->GetRakServer()->GetPlayerIDFromIndex(bytePlayerID),TRUE,FALSE);
 		
