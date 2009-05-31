@@ -17,8 +17,6 @@ BOOL CPickupPool::InitialiseFromConfig(CConfig *pConfig)
 
     int iModelID;
     VECTOR vecPos;
-    float fRotation;
-    int iColor1, iColor2;
     char * szConfigLine;
 
     iPickupArrayCount = pConfig->GetConfigArrayCount("PICKUP");
@@ -28,10 +26,9 @@ BOOL CPickupPool::InitialiseFromConfig(CConfig *pConfig)
 
          szConfigLine = pConfig->GetConfigEntryAsString("PICKUP",d);
 
-		 sscanf(szConfigLine,"%d%f%f%f%f%d%d",&iModelID,
-                   &vecPos.X,&vecPos.Y,&vecPos.Z,&fRotation,&iColor1,&iColor2);
+		 sscanf(szConfigLine,"%d%f%f%f%f%d%d",&iModelID,&vecPos.X,&vecPos.Y,&vecPos.Z);
 
-         New(d,(BYTE)iModelID,&vecPos,fRotation,iColor1,iColor2);
+         New(d,(BYTE)iModelID,&vecPos);
          d++;
     }
 
@@ -47,11 +44,9 @@ CPickupPool::~CPickupPool()
 	}
 }
 
-BOOL CPickupPool::New(BYTE bytePickupID, BYTE bytePickupType,
-					   VECTOR * vecPos, float fRotation,
-					   int iColor1, int iColor2)
+BOOL CPickupPool::New(BYTE bytePickupID, BYTE bytePickupType, VECTOR * vecPos)
 {
-	m_pPickups[bytePickupID] = new CPickup(bytePickupType,vecPos,fRotation,iColor1,iColor2);
+	m_pPickups[bytePickupID] = new CPickup(bytePickupType,vecPos);
 	if(m_pPickups[bytePickupID])
 	{
 		m_pPickups[bytePickupID]->SetID(bytePickupID);

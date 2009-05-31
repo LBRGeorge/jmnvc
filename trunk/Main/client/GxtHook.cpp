@@ -7,7 +7,7 @@
 
 bool InstallGXTHook(void)
 {
-    CDynamicLibrary Strings;
+    /*CDynamicLibrary Strings;
     if (Strings.Load(LIB_STRINGS))
     {
         typedef int(Main_t)(void);
@@ -26,5 +26,6 @@ bool InstallGXTHook(void)
     else
     {
         return false;
-    }
+    }*/
+	return true;
 }

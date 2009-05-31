@@ -1257,6 +1257,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\netsends.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\netsends.h"
+			>
+		</File>
+		<File
 			RelativePath="rcon.cpp"
 			>
 			<FileConfiguration
