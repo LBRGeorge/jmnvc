@@ -146,7 +146,7 @@ Function .onInit
 	CreateFont $HEADLINE_FONT "$(^Font)" "14" "700"
 
 	InitPluginsDir
-	File /oname=$PLUGINSDIR\welcome.bmp "${NSISDIR}\Contrib\Graphics\Wizard\gtavc.bmp"
+	File /oname=$PLUGINSDIR\welcome.bmp "gtavc.bmp"
 
 FunctionEnd
 
