@@ -56,6 +56,9 @@ CNetGame::CNetGame(PCHAR szHostOrIp, int iPort,
 	//iPortTemp = iPort;
 	//strcpy(szHostTemp,szHostOrIp);
 
+	//Setup Network Sends
+	m_pNetSends = new CNetSends();
+
 	// Setup player pool
 	m_pPlayerPool = new CPlayerPool();
 	m_pPlayerPool->SetLocalPlayerName(szPlayerName);

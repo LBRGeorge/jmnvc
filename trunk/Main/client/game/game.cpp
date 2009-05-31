@@ -254,10 +254,11 @@ BOOL CGame::IsMenuActive()
 
 void CGame::RequestModel(int iModelID)
 {
-	//_asm push 6
+	/*Still testing*/
 	//_asm push iModelID
-	//_asm mov edx, 0x40E310
+	//_asm mov edx, ADDR_REQUEST_MODEL_REQ_VAR
 	//_asm call edx
+
 	ScriptCommand(&request_model, iModelID);
 	this->LoadRequestedModels();
 }
@@ -266,14 +267,17 @@ void CGame::RequestModel(int iModelID)
 
 void CGame::LoadRequestedModels()
 {
-	ScriptCommand(&load_requested_models);
+	_asm push 0
+	_asm mov edx, ADDR_LOAD_REQUESTED_MODELS2
+	_asm call edx
+	_asm pop ecx
 }
 
 //-----------------------------------------------------------
 
 BOOL CGame::IsModelLoaded(int iModelID)
 {
-	if(ScriptCommand(&is_model_available, iModelID)) {
+	if(*(BYTE*)(0x94DDD8 + 0x14*iModelID)==1) {
 		return TRUE;
 	} else {
 		return FALSE;

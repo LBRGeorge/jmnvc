@@ -1,3 +1,9 @@
+#ifndef _NETGAME_H
+#define _NETGAME_H
+
+#include "main.h"
+#include "netsends.h"
+
 #define GAMESTATE_NONE			0
 #define GAMESTATE_CONNECTING	1
 #define GAMESTATE_CONNECTED		2
@@ -22,6 +28,7 @@ class CNetGame
 {
 private:
 
+	CNetSends			*m_pNetSends;
 	CPlayerPool			*m_pPlayerPool;
 	CVehiclePool		*m_pVehiclePool;
 	RakClientInterface	*m_pRakClient;
@@ -56,6 +63,7 @@ public:
 	int GetGameState() { return m_iGameState; };
 	void SetGameState(int iGameState) { m_iGameState = iGameState; };
 
+	CNetSends * GetNetSends() { return m_pNetSends; };
 	CPlayerPool * GetPlayerPool() { return m_pPlayerPool; };
 	CVehiclePool * GetVehiclePool() { return m_pVehiclePool; };
 	RakClientInterface * GetRakClient() { return m_pRakClient; };
@@ -65,4 +73,4 @@ public:
 	void UpdatePlayerScoresAndPings();
 };
 
-//----------------------------------------------------
+#endif

@@ -961,6 +961,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\netsends.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\netsends.h"
+				>
+			</File>
+			<File
 				RelativePath="net\playerpool.cpp"
 				>
 				<FileConfiguration
