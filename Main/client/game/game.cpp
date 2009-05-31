@@ -254,11 +254,10 @@ BOOL CGame::IsMenuActive()
 
 void CGame::RequestModel(int iModelID)
 {
-	/*Still testing*/
+	//TODO: Convert Request Model so it uses ASM
 	//_asm push iModelID
 	//_asm mov edx, ADDR_REQUEST_MODEL_REQ_VAR
 	//_asm call edx
-
 	ScriptCommand(&request_model, iModelID);
 	this->LoadRequestedModels();
 }
@@ -315,13 +314,8 @@ void CGame::DisplayTextMessage(PCHAR szText)
 
 void CGame::ChangeTime(int iHour, int iMinute)
 {
-	DWORD dwVP, dwVP2;
-	VirtualProtect((PVOID)0xA10B6B,1,PAGE_EXECUTE_READWRITE,&dwVP);
 	*(BYTE *)0xA10B6B = iHour;
-	VirtualProtect((PVOID)0xA10B6B,1,dwVP,&dwVP2);
-	VirtualProtect((PVOID)0xA10B92,1,PAGE_EXECUTE_READWRITE,&dwVP);
 	*(BYTE *)0xA10B92 = iMinute;
-	VirtualProtect((PVOID)0xA10B92,1,dwVP,&dwVP2);
 }
 
 void CGame::SelectInterior(int iInterior)

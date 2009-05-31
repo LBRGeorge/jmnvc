@@ -6,6 +6,7 @@
 
 extern CNetGame* pNetGame;
 extern CGame* pGame;
+extern CChatWindow   *pChatWindow;
 
 extern DWORD dwGameLoop;
 extern DWORD dwRenderLoop;
@@ -16,10 +17,11 @@ PED_TYPE	*_pPlayer;
 VEHICLE_TYPE *_pVehicle;
 DWORD		*_pEntity;
 int			_iWeapon;
-float		_fUnk;
+float		_fLoss;
 int			_iPedPieces;
 BYTE		_byteUnk;
 
+DWORD	dwLocalLastVehicle;
 DWORD	dwStackFrame;
 DWORD	dwCurPlayerActor=0;
 BYTE	byteCurPlayer=0;
@@ -52,7 +54,7 @@ DWORD dwSuspectedCheat=0;
 DWORD dwStoredPlayerDataSum[2];
 float fStoredPlayerHealth=0.0f;
 float fStoredPlayerArmour=0.0f;
-float fCheaterFlingSpeed = 0.0f;
+float fCheaterFlingSpeed = 0.0f; 
 
 BYTE PreGameProcess_HookJmpCode[]	= {0xFF,0x25,0x77,0x5D,0x4A,0x00}; //4A5D77
 BYTE PedSetObjective_HookJmpCode[]	= {0xFF,0x25,0x75,0x11,0x40,0x00,0x90,0x90,0x90};
@@ -61,6 +63,38 @@ BYTE EnterCarAnimCallback_HookJmpCode[] = {0xFF,0x25,0xD8,0x28,0x51,0x00,0x90,0x
 BYTE HookedRand_HookJmpCode[] = {0xFF,0x25,0xE8,0x99,0x64,0x00,0x90,0x90}; // 6499E8
 BYTE InflictDamage_HookJmpCode[] = {0xFF,0x25,0x15,0x5B,0x52,0x00}; // 525B15
 BYTE InTheGame_HookJmpCode[] = {0xFF,0x25,0x3c,0x5c,0x4a,0x00}; //4A5C3C
+
+PED_TYPE* GetLocalPlayer()
+{
+	DWORD dwPlayerAdr = 0x9412F0;
+	BYTE* VerCheck = (BYTE*)0x608578;
+	if (*VerCheck == 0x81)
+		dwPlayerAdr = 0x6FB1C8;
+	DWORD dwPlayerPtr = *(DWORD*)dwPlayerAdr;
+	return (PED_TYPE*)dwPlayerPtr;
+}
+
+DWORD GetLocalPlayersLastVehicle()
+{
+	DWORD dwPlayerAdr = 0x9412F0;
+	BYTE* VerCheck = (BYTE*)0x608578;
+	if (*VerCheck == 0x81)
+		dwPlayerAdr = 0x6FB1C8;
+	DWORD dwPlayerPtr = *(DWORD*)dwPlayerAdr;
+	DWORD dwVehiclePtr = *(DWORD*)(dwPlayerPtr + 0x170);
+	return dwVehiclePtr;
+}
+
+BOOL IsLocalPlayerInVehicle()
+{
+	DWORD dwPlayerAdr = 0x9412F0;
+	BYTE* VerCheck = (BYTE*)0x608578;
+	if (*VerCheck == 0x81)
+		dwPlayerAdr = 0x6FB1C8;
+	DWORD dwPlayerPtr = *(DWORD*)dwPlayerAdr;
+	BYTE IsInVehicle = *(BYTE*)(dwPlayerPtr + 0x314);
+	return (IsInVehicle>=1);
+}
 
 void DoCheatEntryChecking() 
 {
@@ -366,7 +400,7 @@ NUDE CAutomobile_ProcessControl_Hook()
 void _stdcall DoEnterVehicleNotification(BOOL bPassenger)
 {
 	if(pNetGame) {
-		ObjectiveVehicle = (VEHICLE_TYPE *)_pVehicle;			
+		ObjectiveVehicle = (VEHICLE_TYPE *)_pVehicle;
 		CLocalPlayer* pLocalPlayer = pNetGame->GetPlayerPool()->GetLocalPlayer();
 		pLocalPlayer->SendEnterVehicleNotification(pNetGame->GetVehiclePool()->FindIDFromGtaPtr(ObjectiveVehicle),bPassenger);
 	}
@@ -411,6 +445,10 @@ static BOOL _stdcall ResetBlood(PED_TYPE *pPlayer,DWORD *pdwEnt, int iWeapon, fl
 	return FALSE;
 }
 
+CPlayerPool* pPlayerPool;
+BOOL bIsLocalPlayer;
+CLocalPlayer* pLocalPlayer;
+CRemotePlayer* pRemotePlayer;
 NUDE CPed_InflictDamageHook()
 {
 	_asm mov dwStackFrame, esp
@@ -420,13 +458,30 @@ NUDE CPed_InflictDamageHook()
 	_asm mov eax, [esp+8]
 	_asm mov _iWeapon, eax
 	_asm mov eax, [esp+12]
-	_asm mov _fUnk, eax
+	_asm mov _fLoss, eax
 	_asm mov eax, [esp+16]
 	_asm mov _iPedPieces, eax
 	_asm mov al, [esp+20]
 	_asm mov _byteUnk, al
 	_asm pushad
-	//TODO: Add some event handler here
+	pPlayerPool = pNetGame->GetPlayerPool();
+	bIsLocalPlayer = FALSE;
+	if (_pPlayer==GetLocalPlayer())
+	{
+		bIsLocalPlayer = TRUE;
+		pLocalPlayer = pPlayerPool->GetLocalPlayer();
+		if (pLocalPlayer->IsActive())
+		{
+			//TODO: Add some event handler here
+		}
+	}else{
+		BYTE bytePlayerID = pPlayerPool->FindRemotePlayerIDFromGtaPtr(_pPlayer);
+		pRemotePlayer = pPlayerPool->GetAt(bytePlayerID);
+		if (pRemotePlayer->IsActive())
+		{
+			//TODO: Add some event handler here
+		}
+	}
 	_asm popad
 	_asm mov esp, dwStackFrame
 	_asm fld ds:[0x694170]
@@ -485,6 +540,9 @@ void GameInstallHooks()
 
 	// Install CAutomobile::ProcessControl hook.
 	InstallMethodHook(0x69ADB0,(DWORD)CAutomobile_ProcessControl_Hook);
+
+	// Install CPed::EnterCar hook.
+	//InstallMethodHook(0x517BA0,(DWORD)CPed_EnterCar_Hook);
 								
 	// Install Hook for RadarTranslateColor
 	InstallHook(0x4C3050,(DWORD)RadarTranslateColor,0x4C3044,
@@ -494,11 +552,8 @@ void GameInstallHooks()
 		InflictDamage_HookJmpCode,sizeof(InflictDamage_HookJmpCode));
 
 	//TODO: Fix GXT Hook
-	//This GXT Hook is made by Spookie and lets us control GTA's Interface ;)
 	//if (!InstallGXTHook())
 	//{
-	//	//We cannot recover and we could be frozen if fullscreen
-	//	//Be nice and just terminate the game for them
 	//	ExitProcess(0);
 	//}
 }

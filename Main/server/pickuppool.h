@@ -13,7 +13,7 @@ public:
 	CPickupPool();
 	~CPickupPool();
 
-	BOOL New(BYTE bytePickupID, BYTE bytePickupType, VECTOR * vecPos, float fRotation, int iColor1, int iColor2);
+	BOOL New(BYTE bytePickupID, BYTE bytePickupType, VECTOR * vecPos);
 	BOOL Delete(BYTE bytePickupID);	
 		
 	// Retrieve a Pickup by id

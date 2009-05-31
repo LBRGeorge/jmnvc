@@ -15,7 +15,7 @@ extern CRcon			*pRcon;
 #	define stricmp strcasecmp
 #endif
 
-#define NETGAME_VERSION 35
+#define NETGAME_VERSION 37
 
 #define REJECT_REASON_BAD_VERSION   1
 #define REJECT_REASON_BAD_NICKNAME  2
@@ -29,7 +29,6 @@ void FilterInvalidNickChars(PCHAR szString);
 void ClientJoin(PCHAR Data, int iBitLength, PlayerID sender)
 {
 	RakNet::BitStream bsData(Data,iBitLength/8,FALSE);
-	RakNet::BitStream bsReject;
 	CPlayerPool *pPlayerPool = pNetGame->GetPlayerPool();
 	CVehiclePool *pVehiclePool = pNetGame->GetVehiclePool();
 	CPickupPool *pPickupPool = pNetGame->GetPickupPool();
@@ -39,14 +38,11 @@ void ClientJoin(PCHAR Data, int iBitLength, PlayerID sender)
 	BYTE bytePlayerID;
 	BYTE byteVersion;
 	BYTE byteNickLen;
-	BYTE byteRejectReason;
 
 	bsData.Read(byteVersion);
 
 	if(byteVersion != NETGAME_VERSION) {
-		byteRejectReason = REJECT_REASON_BAD_VERSION;
-		bsReject.Write(byteRejectReason);
-		pRak->RPC("ConnectionRejected",&bsReject,HIGH_PRIORITY,RELIABLE,0,sender,FALSE,FALSE);
+		pNetGame->GetNetSends()->ConnectionRejected(sender, REJECT_REASON_BAD_VERSION);
 		return;
 	}
 
@@ -58,9 +54,7 @@ void ClientJoin(PCHAR Data, int iBitLength, PlayerID sender)
 	byteNickLen = strlen(szPlayerName);
 
 	if(byteNickLen==0 || byteNickLen > 16 || pPlayerPool->IsNickInUse(szPlayerName)) {
-		byteRejectReason = REJECT_REASON_BAD_NICKNAME;
-		bsReject.Write(byteRejectReason);
-		pRak->RPC("ConnectionRejected",&bsReject,HIGH_PRIORITY,RELIABLE,0,sender,FALSE,FALSE);
+		pNetGame->GetNetSends()->ConnectionRejected(sender, REJECT_REASON_BAD_NICKNAME);
 		return;
 	}
 
@@ -69,58 +63,15 @@ void ClientJoin(PCHAR Data, int iBitLength, PlayerID sender)
 	// Add this client to the player pool.
 	pPlayerPool->New(bytePlayerID, szPlayerName);
 
-	// Send this client back an 'InitGame' RPC
-	RakNet::BitStream bsInitGame;
-	bsInitGame.Write((float)pNetGame->m_vecInitPlayerPos.X);
-	bsInitGame.Write((float)pNetGame->m_vecInitPlayerPos.Y);
-	bsInitGame.Write((float)pNetGame->m_vecInitPlayerPos.Z);
-	bsInitGame.Write((float)pNetGame->m_vecInitCameraPos.X);
-	bsInitGame.Write((float)pNetGame->m_vecInitCameraPos.Y);
-	bsInitGame.Write((float)pNetGame->m_vecInitCameraPos.Z);
-	bsInitGame.Write((float)pNetGame->m_vecInitCameraLook.X);
-	bsInitGame.Write((float)pNetGame->m_vecInitCameraLook.Y);
-	bsInitGame.Write((float)pNetGame->m_vecInitCameraLook.Z);
-	bsInitGame.Write((float)pNetGame->m_WorldBounds[0]);
-	bsInitGame.Write((float)pNetGame->m_WorldBounds[1]);
-	bsInitGame.Write((float)pNetGame->m_WorldBounds[2]);
-	bsInitGame.Write((float)pNetGame->m_WorldBounds[3]);
-	bsInitGame.Write(pNetGame->m_iSpawnsAvailable);
-	bsInitGame.Write(pNetGame->m_byteFriendlyFire);
-	bsInitGame.Write(pNetGame->m_byteShowOnRadar);
-	bsInitGame.Write((int)pNetGame->m_startInterior);
-	bsInitGame.Write(bytePlayerID);
-	pRak->RPC("InitGame",&bsInitGame,HIGH_PRIORITY,RELIABLE_ORDERED,0,sender,FALSE,FALSE);
+	// Send this client back an 'InitGame' Call
+	pNetGame->GetNetSends()->InitGame(sender, pNetGame->m_vecInitPlayerPos, pNetGame->m_vecInitCameraPos, pNetGame->m_vecInitCameraLook, pNetGame->m_WorldBounds, pNetGame->m_iSpawnsAvailable, pNetGame->m_byteFriendlyFire, pNetGame->m_byteShowOnRadar, pNetGame->m_startInterior);
 
-	// Send this client ServerJoins for every existing player
-	BYTE x=0;
-	RakNet::BitStream * pbsExistingClient;
-
-	while(x!=MAX_PLAYERS) {
-		if( (pPlayerPool->GetSlotState(x) == TRUE) && 
-			(x != bytePlayerID) ) {
-
-			pbsExistingClient = new RakNet::BitStream();
-
-			pbsExistingClient->Write(x);
-			pbsExistingClient->Write(strlen(pPlayerPool->GetPlayerName(x)));
-			pbsExistingClient->Write(pPlayerPool->GetPlayerName(x),strlen(pPlayerPool->GetPlayerName(x)));
-			pbsExistingClient->Write((BYTE)0);
-			pRak->RPC("ServerJoin",pbsExistingClient,HIGH_PRIORITY,RELIABLE_ORDERED,0,sender,FALSE,FALSE);
-	
-			delete pbsExistingClient;
-
-			// Now also spawn the player for them if they're active.
-			CPlayer *pSpawnPlayer = pPlayerPool->GetAt(x);
-			if(pSpawnPlayer->IsActive()) {
-				pSpawnPlayer->SpawnForPlayer(bytePlayerID);
-			}
-		}
-		x++;
-	}
+	// Send this client existing players
+	pNetGame->GetNetSends()->FirstJoin(sender);
 
 	// Spawn all existing vehicles for player.
 	CVehicle *pVehicle;
-	x=0;
+	BYTE x=0;
 
 	while(x!=MAX_VEHICLES) {
 		if(pVehiclePool->GetSlotState(x) == TRUE) {
@@ -141,7 +92,7 @@ void ClientJoin(PCHAR Data, int iBitLength, PlayerID sender)
 		x++;
 	}
 
-	CPed *pPed;
+	/*CPed *pPed;
 	x=0;
 
 	while(x!=MAX_PEDS) {
@@ -150,7 +101,7 @@ void ClientJoin(PCHAR Data, int iBitLength, PlayerID sender)
 			if(pPed->IsActive()) pPed->SpawnForPlayer(bytePlayerID);
 		}
 		x++;
-	}
+	}*/
 
 	pNetGame->GetGameLogic()->HandleClientJoin(bytePlayerID);
 //	lua_getglobal( L, "OnPlayerJoinDataChange" );

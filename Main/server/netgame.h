@@ -1,8 +1,12 @@
 #pragma once
 
+#ifndef _NETGAME_H
+#define _NETGAME_H
+
 #define IS_FIRING(x) (x & 0x200) // for checking the keystate firing bit
 
 #include "main.h"
+#include "netsends.h"
 #include "celement.h"
 #include "player.h"
 #include "playerpool.h"
@@ -30,6 +34,7 @@ class CNetGame
 {
 private:
 
+	CNetSends					*m_pNetSends;
 	CPlayerPool					*m_pPlayerPool;
 	CVehiclePool				*m_pVehiclePool;
 	CPickupPool					*m_pPickupPool;
@@ -63,6 +68,7 @@ public:
 	~CNetGame();
 
 	int GetGameState() { return m_iGameState; };
+	CNetSends * GetNetSends() { return m_pNetSends; };
 	CPlayerPool * GetPlayerPool() { return m_pPlayerPool; };
 	CVehiclePool * GetVehiclePool() { return m_pVehiclePool; };
 	CPickupPool * GetPickupPool() { return m_pPickupPool; };
@@ -92,3 +98,5 @@ public:
 	BYTE		m_byteShowOnRadar;
 	int			m_startInterior;
 };
+
+#endif

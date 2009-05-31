@@ -9,8 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "server", "server\server.vcp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server - Launcher", "serverlauncher\Launcher.vcproj", "{0EAA9107-413A-47C4-B6E7-41B10208FBA1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Strings", "stringhook\Strings.vcproj", "{9CE2472F-641E-4A9D-A520-D8B2A17AAAFF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -33,10 +31,6 @@ Global
 		{0EAA9107-413A-47C4-B6E7-41B10208FBA1}.Debug|Win32.Build.0 = Debug|Win32
 		{0EAA9107-413A-47C4-B6E7-41B10208FBA1}.Release|Win32.ActiveCfg = Release|Win32
 		{0EAA9107-413A-47C4-B6E7-41B10208FBA1}.Release|Win32.Build.0 = Release|Win32
-		{9CE2472F-641E-4A9D-A520-D8B2A17AAAFF}.Debug|Win32.ActiveCfg = Debug|Win32
-		{9CE2472F-641E-4A9D-A520-D8B2A17AAAFF}.Debug|Win32.Build.0 = Debug|Win32
-		{9CE2472F-641E-4A9D-A520-D8B2A17AAAFF}.Release|Win32.ActiveCfg = Release|Win32
-		{9CE2472F-641E-4A9D-A520-D8B2A17AAAFF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

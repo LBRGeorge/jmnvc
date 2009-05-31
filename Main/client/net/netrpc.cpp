@@ -11,6 +11,35 @@ extern CNetGame* pNetGame;
 #define REJECT_REASON_BAD_NICKNAME  2
 
 //----------------------------------------------------
+// This gets sent when we first join the game to let us
+// know how many players there are and add them to the pool
+
+void FirstJoin(PCHAR Data, int iBitLength, PlayerID sender)
+{
+	BYTE x = 0;
+	CPlayerPool *pPlayerPool = pNetGame->GetPlayerPool();
+	RakNet::BitStream bsData(Data,iBitLength/8,FALSE);
+	BYTE byteTotalPlayers;
+	bsData.Read(byteTotalPlayers);
+
+	while(x<byteTotalPlayers) {
+		CHAR szPlayerName[MAX_PLAYER_NAME];
+		BYTE bytePlayerID;
+		UINT uiNameLength;
+		memset(szPlayerName,0,MAX_PLAYER_NAME);
+		bsData.Read(bytePlayerID);
+		bsData.Read(uiNameLength);
+		bsData.Read(szPlayerName,uiNameLength);
+		szPlayerName[uiNameLength] = '\0';
+
+		// Add this client to the player pool.
+		pPlayerPool->New(bytePlayerID, szPlayerName, false);
+
+		x++;
+	}
+}
+
+//----------------------------------------------------
 // Sent when a client joins the server we're
 // currently connected to.
 
@@ -394,30 +423,22 @@ void PickupSpawn(PCHAR Data, int iBitLength, PlayerID sender)
 {
 	RakNet::BitStream bsData(Data,iBitLength/8,FALSE);
 	BYTE bytePickupID=0;
-	BYTE bytePickupType;
+	BYTE bytePickupModel;
+	BOOL bytePickedUp;
 	VECTOR vecPos;
-	VECTOR vecSpawnPos;
-	float fRotation;
-	float fSpawnRotation;
-	float fHealth;
-	int iColor1, iColor2;
 
 	bsData.Read(bytePickupID);
-	bsData.Read(bytePickupType);
+	bsData.Read(bytePickupModel);
 	bsData.Read(vecPos.X);
 	bsData.Read(vecPos.Y);
 	bsData.Read(vecPos.Z);
-	bsData.Read(fRotation);
-	bsData.Read(iColor1);
-	bsData.Read(iColor2);
-	bsData.Read(fHealth);
-	bsData.Read(vecSpawnPos.X);
-	bsData.Read(vecSpawnPos.Y);
-	bsData.Read(vecSpawnPos.Z);
-	bsData.Read(fSpawnRotation);
+	bsData.Read(bytePickedUp);
 
-	DWORD myPickup=0;
-	ScriptCommand(&create_pickup,bytePickupType,15,vecPos.X,vecPos.Y,vecPos.Z,&myPickup);
+	//if (bytePickedUp==FALSE)
+	//{
+		DWORD myPickup=0;
+		ScriptCommand(&create_pickup,bytePickupModel,15,vecPos.X,vecPos.Y,vecPos.Z,&myPickup);
+	//}
 }
 
 void VehicleSpawn(PCHAR Data, int iBitLength, PlayerID sender)
@@ -511,6 +532,7 @@ void ConnectionRejected(PCHAR Data, int iBitLength, PlayerID sender)
 
 void RegisterRPCs(RakClientInterface * pRakClient)
 {
+	REGISTER_AS_REMOTE_PROCEDURE_CALL(pRakClient,FirstJoin);
 	REGISTER_AS_REMOTE_PROCEDURE_CALL(pRakClient,ServerJoin);
 	REGISTER_AS_REMOTE_PROCEDURE_CALL(pRakClient,ServerQuit);	
 	REGISTER_AS_REMOTE_PROCEDURE_CALL(pRakClient,InitGame);
@@ -533,6 +555,7 @@ void RegisterRPCs(RakClientInterface * pRakClient)
 
 void UnRegisterRPCs(RakClientInterface * pRakClient)
 {
+	UNREGISTER_AS_REMOTE_PROCEDURE_CALL(pRakClient,FirstJoin);
 	UNREGISTER_AS_REMOTE_PROCEDURE_CALL(pRakClient,ServerJoin);
 	UNREGISTER_AS_REMOTE_PROCEDURE_CALL(pRakClient,ServerQuit);
 	UNREGISTER_AS_REMOTE_PROCEDURE_CALL(pRakClient,InitGame);

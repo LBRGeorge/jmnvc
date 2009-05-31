@@ -4,6 +4,7 @@
 class CNetSends
 {
 public:
+	static void						ServerCall					( BOOL bSequenced, char* szCallName, RakNet::BitStream bsSend );
 	static void						Death						( BYTE byteDeathReason, BYTE byteWhoWasResponsible );
 	static void						RequestClass				( BYTE byteClass );
 	static void						Spawn						( void );
