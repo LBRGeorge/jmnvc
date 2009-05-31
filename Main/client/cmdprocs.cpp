@@ -170,15 +170,8 @@ void cmdBuild(PCHAR szCmd)
 
 void cmdAdmin(PCHAR szCmd)
 {
-	int iPassLen=0;
-	RakNet::BitStream bsSend;
-
 	if(pNetGame) {
-		iPassLen = strlen(szCmd);
-		if(iPassLen > 64) return;
-		bsSend.Write(iPassLen);
-		bsSend.Write(szCmd,iPassLen);
-		pNetGame->GetRakClient()->RPC("Admin",&bsSend,HIGH_PRIORITY,RELIABLE,0,FALSE);			
+		pNetGame->GetNetSends()->AdminLogin(szCmd);
 	}
 }
 
@@ -194,11 +187,8 @@ void cmdKickEm(PCHAR szCmd)
 	BYTE bytePlayerID;
 	sscanf(szCmd,"%u",&bytePlayerID);
 
-	RakNet::BitStream bsSend;
-
 	if(pNetGame) {
-		bsSend.Write(bytePlayerID);
-		pNetGame->GetRakClient()->RPC("KickPlayer",&bsSend,HIGH_PRIORITY,RELIABLE,0,FALSE);			
+		pNetGame->GetNetSends()->KickPlayer(bytePlayerID);
 	}
 }
 
@@ -206,15 +196,8 @@ void cmdKickEm(PCHAR szCmd)
 
 void cmdBanTheirSorryAsses(PCHAR szCmd)
 {
-	int iIPLen=0;
-	RakNet::BitStream bsSend;
-
 	if(pNetGame) {
-		iIPLen = strlen(szCmd);
-		if(iIPLen > 64) return;
-		bsSend.Write(iIPLen);
-		bsSend.Write(szCmd,iIPLen);
-		pNetGame->GetRakClient()->RPC("BanIPAddress",&bsSend,HIGH_PRIORITY,RELIABLE,0,FALSE);			
+		pNetGame->GetNetSends()->BanIP(szCmd);
 	}
 }
 

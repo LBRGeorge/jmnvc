@@ -346,18 +346,10 @@ int CLocalPlayer::GetOptimumOnFootSendRate()
 
 void CLocalPlayer::SendWastedNotification()
 {
-	CGameModeGeneric *pGameLogic;
-	RakNet::BitStream bsPlayerDeath;
 	BYTE byteDeathReason;
 	BYTE byteWhoWasResponsible;
-
 	byteDeathReason = m_pPlayerPed->FindDeathReasonAndResponsiblePlayer(&byteWhoWasResponsible);
-	
-	bsPlayerDeath.Write(byteDeathReason);
-	bsPlayerDeath.Write(byteWhoWasResponsible);
-	pNetGame->GetRakClient()->RPC("Death",&bsPlayerDeath,HIGH_PRIORITY,RELIABLE_SEQUENCED,0,FALSE);
-	
-	pGameLogic = pNetGame->GetGameLogic();
+	pNetGame->GetNetSends()->Death(byteDeathReason, byteWhoWasResponsible);
 }
 
 //----------------------------------------------------------
@@ -396,9 +388,7 @@ void CLocalPlayer::HandleDeath(BYTE byteReason, BYTE byteWhoKilled, BYTE byteSco
 
 void CLocalPlayer::RequestClass(BYTE byteClass)
 {
-	RakNet::BitStream bsSpawnRequest;
-	bsSpawnRequest.Write(byteClass);
-	pNetGame->GetRakClient()->RPC("RequestClass",&bsSpawnRequest,HIGH_PRIORITY,RELIABLE,0,FALSE);
+	pNetGame->GetNetSends()->RequestClass(byteClass);
 }
 
 //----------------------------------------------------------
@@ -486,9 +476,7 @@ BOOL CLocalPlayer::SpawnPlayer( BYTE byteTeam,
 	}	
 
 	// Let the rest of the network know we're spawning.
-	RakNet::BitStream bsSendSpawn;
-	pNetGame->GetRakClient()->RPC("Spawn",&bsSendSpawn,HIGH_PRIORITY,RELIABLE_SEQUENCED,0,FALSE);
-	
+	pNetGame->GetNetSends()->Spawn();
 	return TRUE;
 }
 
@@ -501,13 +489,7 @@ void CLocalPlayer::Say(PCHAR szText)
 		return;
 	}
 
-	BYTE byteTextLen = strlen(szText);
-
-	RakNet::BitStream bsSend;
-	bsSend.Write(byteTextLen);
-	bsSend.Write(szText,byteTextLen);
-
-	pNetGame->GetRakClient()->RPC("Chat",&bsSend,HIGH_PRIORITY,RELIABLE,0,FALSE);
+	pNetGame->GetNetSends()->Chat(szText);
 	
 	// Process chat message to chat window.
 	pChatWindow->AddChatMessage(pNetGame->GetPlayerPool()->GetLocalPlayerName(),
@@ -518,23 +500,16 @@ void CLocalPlayer::Say(PCHAR szText)
 
 void CLocalPlayer::SendEnterVehicleNotification(BYTE byteVehicleID, BOOL bPassenger)
 {
-	RakNet::BitStream bsSend;
 	BYTE bytePassenger=0;
-
 	if(bPassenger) bytePassenger=1;
-
-	bsSend.Write(byteVehicleID);
-	bsSend.Write(bytePassenger);
-	pNetGame->GetRakClient()->RPC("EnterVehicle",&bsSend,HIGH_PRIORITY,RELIABLE_SEQUENCED,0,FALSE);
+	pNetGame->GetNetSends()->EnterVehicle(byteVehicleID,bytePassenger);
 }
 
 //----------------------------------------------------------
 
 void CLocalPlayer::SendExitVehicleNotification(BYTE byteVehicleID)
 {
-	RakNet::BitStream bsSend;
-	bsSend.Write(byteVehicleID);
-	pNetGame->GetRakClient()->RPC("ExitVehicle",&bsSend,HIGH_PRIORITY,RELIABLE_SEQUENCED,0,FALSE);
+	pNetGame->GetNetSends()->ExitVehicle(byteVehicleID);
 }
 
 //----------------------------------------------------
